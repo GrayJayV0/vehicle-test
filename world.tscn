@@ -1,0 +1,48 @@
+[gd_scene load_steps=11 format=3 uid="uid://ixfrxswyqk4q"]
+
+[ext_resource type="Texture2D" uid="uid://7u3vvalmlu6v" path="res://icon.svg" id="1_c1wms"]
+[ext_resource type="PackedScene" uid="uid://bduswfya4e5lx" path="res://car.tscn" id="1_ks20o"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_b0r0n"]
+
+[sub_resource type="Sky" id="Sky_m53tf"]
+sky_material = SubResource("ProceduralSkyMaterial_b0r0n")
+
+[sub_resource type="Environment" id="Environment_ec5o0"]
+background_mode = 2
+sky = SubResource("Sky_m53tf")
+
+[sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_mmuxj"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_w57l4"]
+albedo_texture = ExtResource("1_c1wms")
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_0muuf"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_v8k20"]
+
+[sub_resource type="ORMMaterial3D" id="ORMMaterial3D_coxrs"]
+normal_enabled = true
+normal_scale = -0.15
+normal_texture = SubResource("NoiseTexture2D_v8k20")
+
+[node name="Node3D" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_ec5o0")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+
+[node name="StaticBody3D" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
+shape = SubResource("WorldBoundaryShape3D_mmuxj")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D/CollisionShape3D"]
+transform = Transform3D(50, 0, 0, 0, 50, 0, 0, 0, 50, 0, 0, 0)
+material_override = SubResource("StandardMaterial3D_w57l4")
+mesh = SubResource("PlaneMesh_0muuf")
+surface_material_override/0 = SubResource("ORMMaterial3D_coxrs")
+
+[node name="VehicleBody3D" parent="." instance=ExtResource("1_ks20o")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.02808, 0)
