@@ -30,9 +30,10 @@ func _physics_process(delta: float) -> void:
 		engine_force = Input.get_axis("ui_down","ui_up") * ENGINE_POWER
 	elif drift == true:
 		engine_force = 0
-		blwheel.wheel_friction_slip = 6
-		brwheel.wheel_friction_slip = 6
+		blwheel.wheel_friction_slip = 0
+		brwheel.wheel_friction_slip = 0	
 		apply_torque_impulse(Vector3(0,20*Input.get_axis("ui_right","ui_left"),0))
+		
 		
 		
 		
