@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://bduswfya4e5lx"]
+[gd_scene load_steps=19 format=3 uid="uid://bduswfya4e5lx"]
 
 [ext_resource type="Script" path="res://car.gd" id="1_xkwxr"]
 
@@ -20,6 +20,19 @@ metallic = 1.0
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_htipy"]
 albedo_color = Color(0.623733, 0, 0.0709673, 1)
+
+[sub_resource type="TubeTrailMesh" id="TubeTrailMesh_fn2uj"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2gooi"]
+albedo_color = Color(0.776471, 0.152941, 0.196078, 1)
+
+[sub_resource type="TubeTrailMesh" id="TubeTrailMesh_5yeaq"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qb2lq"]
+albedo_color = Color(0.623529, 0, 0.0705882, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_gwnje"]
+albedo_color = Color(0.623529, 0, 0.0705882, 1)
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_2a3ss"]
 
@@ -53,14 +66,32 @@ skeleton = NodePath("../..")
 surface_material_override/0 = SubResource("StandardMaterial3D_08332")
 
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="CollisionShape3D"]
-transform = Transform3D(-4.37114e-08, 0, 1.96418, 0, 0.8, 0, -1, 0, -8.58568e-08, 0, 0.745197, 1.25449)
+transform = Transform3D(-4.37114e-08, 0, 1.96418, 0, 0.8, 0, -1, 0, -8.58568e-08, 0, 0.745197, 1.19431)
 mesh = SubResource("PrismMesh_vobwu")
 surface_material_override/0 = SubResource("StandardMaterial3D_104df")
 
 [node name="MeshInstance3D3" type="MeshInstance3D" parent="CollisionShape3D"]
-transform = Transform3D(1.98705, 0, 0, 0, 1, 0, 0, 0, 3.76804, 0, 0.646, -0.608574)
+transform = Transform3D(2, 0, 0, 0, 1, 0, 0, 0, 3.7, 0, 0.646, -0.649412)
 mesh = SubResource("BoxMesh_hvh66")
 surface_material_override/0 = SubResource("StandardMaterial3D_htipy")
+
+[node name="MeshInstance3D4" type="MeshInstance3D" parent="CollisionShape3D"]
+transform = Transform3D(0.1, 0, 0, 0, 0.691059, 0.0722798, 0, -0.722798, 0.0691059, 0.847655, 1.09505, -2.44086)
+visible = false
+mesh = SubResource("TubeTrailMesh_fn2uj")
+surface_material_override/0 = SubResource("StandardMaterial3D_2gooi")
+
+[node name="MeshInstance3D6" type="MeshInstance3D" parent="CollisionShape3D"]
+transform = Transform3D(-4.37114e-08, -3, 4.37114e-09, 0, -1.31134e-07, -0.1, 1, -1.31134e-07, 1.91069e-16, 0, 1.444, -3.006)
+visible = false
+mesh = SubResource("TubeTrailMesh_5yeaq")
+surface_material_override/0 = SubResource("StandardMaterial3D_qb2lq")
+
+[node name="MeshInstance3D5" type="MeshInstance3D" parent="CollisionShape3D"]
+transform = Transform3D(0.1, 0, 0, 0, 0.691059, 0.0722798, 0, -0.722798, 0.0691059, -0.885725, 1.09505, -2.44086)
+visible = false
+mesh = SubResource("TubeTrailMesh_fn2uj")
+surface_material_override/0 = SubResource("StandardMaterial3D_gwnje")
 
 [node name="VehicleWheel3D" type="VehicleWheel3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0, -1.457)
@@ -103,7 +134,7 @@ mesh = SubResource("CylinderMesh_2a3ss")
 surface_material_override/0 = SubResource("StandardMaterial3D_4kotb")
 
 [node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(-1, 2.10145e-08, -1.49526e-07, 0, 0.990268, 0.139173, 1.50996e-07, 0.139173, -0.990268, -8.74228e-07, 2.5, -5)
+transform = Transform3D(-1, -1.21669e-08, 8.6572e-08, 0, 0.990268, 0.139173, -8.74228e-08, 0.139173, -0.990268, 0, 2.5, -8)
 
 [node name="CenterOfMass" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.5)
