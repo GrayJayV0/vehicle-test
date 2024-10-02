@@ -5,7 +5,7 @@ extends VehicleBody3D
 @onready var frwheel = $VehicleWheel3D3
 @onready var camera = $Camera3D
 @export var MAX_STEER = 1
-@export var ENGINE_POWER = 8000
+@export var ENGINE_POWER = 2000
 var drift
 var new_rotation
 var old_position
@@ -26,24 +26,24 @@ func _physics_process(delta: float) -> void:
 		old_position = position
 		old_velocity = linear_velocity
 	if Input.is_action_just_released("drift"):
+		blwheel.wheel_friction_slip = 10.5
+		brwheel.wheel_friction_slip = 10.5
 		flwheel.wheel_friction_slip = 10.5
 		frwheel.wheel_friction_slip = 10.5
 		drift = false
 		angular_velocity.y = 0
 		#rotation_degrees.y = 0
-	blwheel.wheel_friction_slip = 5
-	brwheel.wheel_friction_slip = 5
 
 	if !drift:
 		engine_force = Input.get_axis("ui_down","ui_up") * ENGINE_POWER
 		steering = move_toward(steering, Input.get_axis("ui_right","ui_left") * MAX_STEER, delta * 10)
 	else:
+		apply_central_impulse(Vector3(10,0,0))
 		linear_velocity.z = old_velocity.z
-	apply_central_impulse(Vector3(0,0,10*Input.get_axis("ui_down","ui_up")))
-	apply_torque_impulse(Vector3(0,10*Input.get_axis("ui_right","ui_left"),0))
+		apply_torque_impulse(Vector3(0,10*Input.get_axis("ui_right","ui_left"),0))
 		
 func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
-	
+	var add = fposmod(rotation_degrees.y,90)*axis
 	if drift and axis == 1:
 		if Input.get_axis("ui_right","ui_left") == 1:
 			var clamp_rotation = clamp(rotation_degrees.y,new_rotation.y,new_rotation.y+75)
@@ -57,7 +57,6 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 		else:
 			pass
 	elif drift and axis == -1:
-		
 		if Input.get_axis("ui_right","ui_left") == -1:
 			var clamp_rotation = clamp(rotation_degrees.y,new_rotation.y-75,new_rotation.y)
 			rotation_degrees = Vector3(rotation_degrees.x,clamp_rotation,rotation_degrees.z)
