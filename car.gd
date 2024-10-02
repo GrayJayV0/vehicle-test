@@ -30,7 +30,8 @@ func _physics_process(delta: float) -> void:
 		flwheel.wheel_friction_slip = 10.5
 		frwheel.wheel_friction_slip = 10.5
 		drift = false
-		angular_velocity.y == 0
+		angular_velocity.y = 0
+		rotation_degrees.y = 0
 
 	if !drift:
 		steering = move_toward(steering, Input.get_axis("ui_right","ui_left") * MAX_STEER, delta * 10)
@@ -44,23 +45,27 @@ func _physics_process(delta: float) -> void:
 func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 	if drift and axis == 1:
 		if Input.get_axis("ui_right","ui_left") == 1:
-			var thing = clamp(rotation_degrees.y,0,new_rotation.y+75)
-			rotation_degrees.y = thing
-		if Input.get_axis("ui_right","ui_left") == 0:
-			var thing = clamp(rotation_degrees.y,0,new_rotation.y+55)
-			rotation_degrees.y = thing
+			var clamp_rotation = clamp(rotation_degrees.y,0,new_rotation.y+75)
+			rotation_degrees.y = clamp_rotation
+		elif Input.get_axis("ui_right","ui_left") == 0:
+			var clamp_rotation = clamp(rotation_degrees.y,0,new_rotation.y+55)
+			rotation_degrees.y = clamp_rotation
 		elif Input.get_axis("ui_right","ui_left") == -1:
-			var thing = clamp(rotation_degrees.y,35,new_rotation.y+55)
-			rotation_degrees.y = thing
+			var clamp_rotation = clamp(rotation_degrees.y,35,new_rotation.y+55)
+			rotation_degrees.y = clamp_rotation
+		else:
+			pass
 	elif drift and axis == -1:
 		if Input.get_axis("ui_right","ui_left") == -1:
-			var thing = clamp(rotation_degrees.y,new_rotation.y-75,0)
-			rotation_degrees.y = thing
+			var clamp_rotation = clamp(rotation_degrees.y,new_rotation.y-75,0)
+			rotation_degrees.y = clamp_rotation
 			apply_central_impulse(Vector3(0,0,0))
-		if Input.get_axis("ui_right","ui_left") == 0:
-			var thing = clamp(rotation_degrees.y,new_rotation.y-55,0)
-			rotation_degrees.y = thing
+		elif Input.get_axis("ui_right","ui_left") == 0:
+			var clamp_rotation = clamp(rotation_degrees.y,new_rotation.y-55,0)
+			rotation_degrees.y = clamp_rotation
 		elif Input.get_axis("ui_right","ui_left") == 1:
-			var thing = clamp(rotation_degrees.y,new_rotation.y-55,-35)
-			rotation_degrees.y = thing
+			var clamp_rotation = clamp(rotation_degrees.y,new_rotation.y-55,-35)
+			rotation_degrees.y = clamp_rotation
+		else:
+			pass
 	print(rotation_degrees.y)
