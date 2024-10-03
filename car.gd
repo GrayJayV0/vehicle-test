@@ -13,7 +13,8 @@ var old_velocity
 var axis
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	pass # Replace with function body.
+	pass
+	
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _physics_process(delta: float) -> void:
 	#print(rotation_degrees,rotation)
@@ -38,33 +39,60 @@ func _physics_process(delta: float) -> void:
 		engine_force = Input.get_axis("ui_down","ui_up") * ENGINE_POWER
 		steering = move_toward(steering, Input.get_axis("ui_right","ui_left") * MAX_STEER, delta * 10)
 	else:
-		apply_central_impulse(Vector3(10,0,0))
 		linear_velocity.z = old_velocity.z
+		linear_velocity.x = old_velocity.x
 		apply_torque_impulse(Vector3(0,10*Input.get_axis("ui_right","ui_left"),0))
 		
 func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
-	var add = fposmod(rotation_degrees.y,90)*axis
+	var total
+	var clamp_rotation
 	if drift and axis == 1:
 		if Input.get_axis("ui_right","ui_left") == 1:
-			var clamp_rotation = clamp(rotation_degrees.y,new_rotation.y,new_rotation.y+75)
-			rotation_degrees = Vector3(rotation_degrees.x,clamp_rotation,rotation_degrees.z)
+			if (sign(rotation_degrees.y)*new_rotation.y + 75 > sign(rotation_degrees.y)*90):
+				if clamp(rotation_degrees.y,[new_rotation.y+(90*sign(rotation_degrees.y)),0].min(),[new_rotation.y+(90*sign(rotation_degrees.y)),0].max()):
+					rotation_degrees.y = clamp(rotation_degrees.y,[new_rotation.y+(90*sign(rotation_degrees.y)),0].min(),[new_rotation.y+(90*sign(rotation_degrees.y)),0].max())
+				elif clamp(rotation_degrees.y,new_rotation.y,90):
+					rotation_degrees.y = clamp(rotation_degrees.y,new_rotation.y,90)
+			else: 
+				clamp_rotation = clamp(rotation_degrees.y,new_rotation.y,new_rotation.y + 75)
+				rotation_degrees.y = clamp_rotation
 		elif Input.get_axis("ui_right","ui_left") == 0:
-			var clamp_rotation = clamp(rotation_degrees.y,new_rotation.y+45,new_rotation.y+75)
-			rotation_degrees = Vector3(rotation_degrees.x,clamp_rotation,rotation_degrees.z)
+			if (sign(rotation_degrees.y)*new_rotation.y + 45 > sign(rotation_degrees.y)*90):
+				if clamp(rotation_degrees.y,[new_rotation.y+(90*sign(rotation_degrees.y)),0].min(),[new_rotation.y+(90*sign(rotation_degrees.y)),0].max()):
+					rotation_degrees.y = clamp(rotation_degrees.y,[new_rotation.y+(90*sign(rotation_degrees.y)),0].min(),[new_rotation.y+(90*sign(rotation_degrees.y)),0].max())
+				elif clamp(rotation_degrees.y,new_rotation.y,90):
+					rotation_degrees.y = clamp(rotation_degrees.y,new_rotation.y,90)
+			else: 
+				if (sign(rotation_degrees.y)*new_rotation.y + 25 > sign(rotation_degrees.y)*90):
+					if clamp(rotation_degrees.y,[new_rotation.y+(90*sign(rotation_degrees.y)),0].min(),[new_rotation.y+(90*sign(rotation_degrees.y)),0].max()):
+						rotation_degrees.y = clamp(rotation_degrees.y,[new_rotation.y+(90*sign(rotation_degrees.y)),0].min(),[new_rotation.y+(90*sign(rotation_degrees.y)),0].max())
+					elif clamp(rotation_degrees.y,new_rotation.y,90):
+						rotation_degrees.y = clamp(rotation_degrees.y,new_rotation.y,90)
+				else: 
+					clamp_rotation = clamp(rotation_degrees.y,new_rotation.y,new_rotation.y + 25)
+					rotation_degrees.y = clamp_rotation
 		elif Input.get_axis("ui_right","ui_left") == -1:
-			var clamp_rotation = clamp(rotation_degrees.y,new_rotation.y+25,new_rotation.y+75)
-			rotation_degrees = Vector3(rotation_degrees.x,clamp_rotation,rotation_degrees.z)
+			if (sign(rotation_degrees.y)*new_rotation.y + 25 > sign(rotation_degrees.y)*90):
+				if clamp(rotation_degrees.y,[new_rotation.y+(90*sign(rotation_degrees.y)),0].min(),[new_rotation.y+(90*sign(rotation_degrees.y)),0].max()):
+					rotation_degrees.y = clamp(rotation_degrees.y,[new_rotation.y+(90*sign(rotation_degrees.y)),0].min(),[new_rotation.y+(90*sign(rotation_degrees.y)),0].max())
+				elif clamp(rotation_degrees.y,new_rotation.y,90):
+					rotation_degrees.y = clamp(rotation_degrees.y,new_rotation.y,90)
+			else: 
+				clamp_rotation = clamp(rotation_degrees.y,new_rotation.y,new_rotation.y + 25)
+				rotation_degrees.y = clamp_rotation
 		else:
 			pass
 	elif drift and axis == -1:
 		if Input.get_axis("ui_right","ui_left") == -1:
-			var clamp_rotation = clamp(rotation_degrees.y,new_rotation.y-75,new_rotation.y)
+			total = [new_rotation.y,new_rotation.y-75]
+			print(total)
+			clamp_rotation = clamp(rotation_degrees.y,total.min(),total.max())
 			rotation_degrees = Vector3(rotation_degrees.x,clamp_rotation,rotation_degrees.z)
 		elif Input.get_axis("ui_right","ui_left") == 0:
-			var clamp_rotation = clamp(rotation_degrees.y,new_rotation.y-75,new_rotation.y-45)
+			clamp_rotation = clamp(rotation_degrees.y,new_rotation.y-75,new_rotation.y-45)
 			rotation_degrees = Vector3(rotation_degrees.x,clamp_rotation,rotation_degrees.z)
 		elif Input.get_axis("ui_right","ui_left") == 1:
-			var clamp_rotation = clamp(rotation_degrees.y,new_rotation.y-75,new_rotation.y-25)
+			clamp_rotation = clamp(rotation_degrees.y,new_rotation.y-75,new_rotation.y-25)
 			rotation_degrees = Vector3(rotation_degrees.x,clamp_rotation,rotation_degrees.z)
 		else:
 			pass
