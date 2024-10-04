@@ -1,7 +1,8 @@
-[gd_scene load_steps=11 format=3 uid="uid://ixfrxswyqk4q"]
+[gd_scene load_steps=12 format=3 uid="uid://ixfrxswyqk4q"]
 
 [ext_resource type="Texture2D" uid="uid://7u3vvalmlu6v" path="res://icon.svg" id="1_c1wms"]
 [ext_resource type="PackedScene" uid="uid://bduswfya4e5lx" path="res://car.tscn" id="1_ks20o"]
+[ext_resource type="PackedScene" uid="uid://jgvftuwtk2f7" path="res://block.tscn" id="2_5axwg"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_b0r0n"]
 
@@ -46,3 +47,6 @@ surface_material_override/0 = SubResource("ORMMaterial3D_coxrs")
 
 [node name="VehicleBody3D" parent="." instance=ExtResource("1_ks20o")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.02808, 0)
+
+[node name="Block" parent="." instance=ExtResource("2_5axwg")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.32523, 3.20045, 3.67713)
