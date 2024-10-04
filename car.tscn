@@ -57,6 +57,7 @@ script = ExtResource("1_xkwxr")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.5)
+rotation_order = 0
 shape = SubResource("BoxShape3D_2j183")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="CollisionShape3D"]
