@@ -29,7 +29,11 @@ func _physics_process(delta: float) -> void:
 		old_rotation = rotation_degrees
 		old_position = position
 		old_velocity = linear_velocity
+		print(axis)
+		print("drift start: " + str(old_rotation.y))
+		print("drift end: " + str(old_rotation.y + 75*sign(rotation_degrees.y) - 90*sign(rotation_degrees.y)))
 	if Input.is_action_just_released("drift"):
+		print(rotation_degrees.y)
 		blwheel.wheel_friction_slip = 10.5
 		brwheel.wheel_friction_slip = 10.5
 		flwheel.wheel_friction_slip = 10.5
@@ -51,18 +55,16 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 	var clamp_rotation
 	if drift:
 		if Input.get_axis("ui_right","ui_left") == -1:
+			total = [old_rotation.y+(75*sign(rotation_degrees.y)),0]
 			if (sign(rotation_degrees.y)*old_rotation.y + 75 > sign(rotation_degrees.y)*90):
-				if clamp(rotation_degrees.y,[old_rotation.y+(90*sign(rotation_degrees.y)),0].min(),[old_rotation.y+(90*sign(rotation_degrees.y)),0].max()):
-					rotation_degrees.y = clamp(rotation_degrees.y,[old_rotation.y+(90*sign(rotation_degrees.y)),0].min(),[old_rotation.y+(90*sign(rotation_degrees.y)),0].max())
+				if clamp(rotation_degrees.y,total.min(),total.max()):
+					rotation_degrees.y = clamp(rotation_degrees.y,total.min(),total.max())
 				elif clamp(rotation_degrees.y,old_rotation.y,90):
 					rotation_degrees.y = clamp(rotation_degrees.y,old_rotation.y,90)
-			else: 
-				clamp_rotation = clamp(rotation_degrees.y,old_rotation.y,old_rotation.y + 75)
-				rotation_degrees.y = clamp_rotation
 		elif Input.get_axis("ui_right","ui_left") == 0:
 			if (sign(rotation_degrees.y)*old_rotation.y + 55 > sign(rotation_degrees.y)*90):
-				if clamp(rotation_degrees.y,[old_rotation.y+(90*sign(rotation_degrees.y)),0].min(),[old_rotation.y+(90*sign(rotation_degrees.y)),0].max()):
-					rotation_degrees.y = clamp(rotation_degrees.y,[old_rotation.y+(90*sign(rotation_degrees.y)),0].min(),[old_rotation.y+(90*sign(rotation_degrees.y)),0].max())
+				if clamp(rotation_degrees.y,[old_rotation.y+(55*sign(rotation_degrees.y)),0].min(),[old_rotation.y+(55*sign(rotation_degrees.y)),0].max()):
+					rotation_degrees.y = clamp(rotation_degrees.y,[old_rotation.y+(55*sign(rotation_degrees.y)),0].min(),[old_rotation.y+(55*sign(rotation_degrees.y)),0].max())
 				elif clamp(rotation_degrees.y,old_rotation.y,90):
 					rotation_degrees.y = clamp(rotation_degrees.y,old_rotation.y,90)
 			else: 
@@ -70,8 +72,8 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 				rotation_degrees.y = clamp_rotation
 		elif Input.get_axis("ui_right","ui_left") == 1:
 			if (sign(rotation_degrees.y)*old_rotation.y + 35 > sign(rotation_degrees.y)*90):
-				if clamp(rotation_degrees.y,[old_rotation.y+(90*sign(rotation_degrees.y)),0].min(),[old_rotation.y+(90*sign(rotation_degrees.y)),0].max()):
-					rotation_degrees.y = clamp(rotation_degrees.y,[old_rotation.y+(90*sign(rotation_degrees.y)),0].min(),[old_rotation.y+(90*sign(rotation_degrees.y)),0].max())
+				if clamp(rotation_degrees.y,[old_rotation.y+(35*sign(rotation_degrees.y)),0].min(),[old_rotation.y+(35*sign(rotation_degrees.y)),0].max()):
+					rotation_degrees.y = clamp(rotation_degrees.y,[old_rotation.y+(35*sign(rotation_degrees.y)),0].min(),[old_rotation.y+(35*sign(rotation_degrees.y)),0].max())
 				elif clamp(rotation_degrees.y,old_rotation.y,90):
 					rotation_degrees.y = clamp(rotation_degrees.y,old_rotation.y,90)
 			else: 
