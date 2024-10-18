@@ -13,6 +13,8 @@ var old_rotation
 var old_position
 var old_velocity
 var axis
+var new_rotation
+var zero = false
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	pass
@@ -29,6 +31,7 @@ func _physics_process(delta: float) -> void:
 		old_rotation = rotation_degrees
 		old_position = position
 		old_velocity = linear_velocity
+		new_rotation = (((old_rotation.y + 75*sign(old_rotation.y)) - 90*sign(old_rotation.y))*sign(old_rotation.y+ 75*axis)*sign(old_rotation.y))
 		#print(axis)
 		#print("drift start: " + str(old_rotation.y))
 		#print("drift end: " + str(int(sign(old_rotation.y + 75*sign(rotation_degrees.y) - 90*sign(rotation_degrees.y)) == sign(old_rotation.y))*90))
@@ -50,26 +53,38 @@ func _physics_process(delta: float) -> void:
 		apply_torque_impulse(Vector3(0,10*Input.get_axis("ui_right","ui_left"),0))
 		
 		
+		
 func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 	var over
 	var under
 	if drift:
-		var new_rotation = (old_rotation.y + 75*sign(rotation_degrees.y) - 90*sign(rotation_degrees.y))
 		if Input.get_axis("ui_right","ui_left") == -1:
-			under = [old_rotation.y,old_rotation.y + sign(rotation_degrees.y)*75]
+			under = [old_rotation.y,old_rotation.y + axis*75]
 			if (abs(sign(rotation_degrees.y)*old_rotation.y + 75) > abs(sign(rotation_degrees.y)*90) or abs(sign(rotation_degrees.y)*old_rotation.y + 75) < 0):
-				over = [new_rotation,sign(rotation_degrees.y)*int(sign(new_rotation) == sign(old_rotation.y))*90]
-				under = [old_rotation.y,sign(rotation_degrees.y)*int(sign(new_rotation) == sign(old_rotation.y))*90]
+				over = [new_rotation,sign(rotation_degrees.y)*int(sign(old_rotation.y)==sign(old_rotation.y + sign(rotation_degrees.y)*75))*90]
+				under = [old_rotation.y,sign(rotation_degrees.y)*int(sign(old_rotation.y)==sign(old_rotation.y + sign(rotation_degrees.y)*75))*90]
 
-				
-				if !(abs(rotation_degrees.y) < abs(old_rotation.y)):
-					rotation_degrees.y = clamp(rotation_degrees.y,under.min(),under.max())
-				else:
+				#clamp(rotation_degrees.y,[under.max(),over.max()].min(),[under.max(),over.max()].max())
+				#print( round(rotation_degrees.y))
+				#print(zero)
+				if zero:
 					rotation_degrees.y = clamp(rotation_degrees.y,over.min(),over.max())
+				else:
+					rotation_degrees.y = clamp(rotation_degrees.y,under.min(),under.max())
+					if round(rotation_degrees.y) == int(under.max()) or round(rotation_degrees.y) in range(int(under.max())+1,int(under.max())+1):
+						zero = true
+					
 			else:
 				rotation_degrees.y = clamp(rotation_degrees.y,under.min(),under.max())
+			print(((old_rotation.y + 75*-sign(old_rotation.y)) - 90*sign(old_rotation.y))*sign(old_rotation.y+ 75*axis)*sign(old_rotation.y))
+			print(old_rotation.y + 75*-sign(old_rotation.y))
+			print((rotation_degrees.y >= -90 and rotation_degrees.y <= -75 or rotation_degrees.y <= 90 and rotation_degrees.y >= 75) and sign(old_rotation.y + 75*-sign(old_rotation.y)) == axis)
 			print(under)
 			print(over)
+			#print(sign(rotation_degrees.y)*int(sign(old_rotation.y)==sign(old_rotation.y + sign(rotation_degrees.y)*75))*90)
+	if !drift:
+		zero = false
+			#print(old_rotation.y not in range(-90,-75) or old_rotation.y not in range(75,90))
 		#elif Input.get_axis("ui_right","ui_left") == 0:
 			#total = [old_rotation.y + 75*sign(rotation_degrees.y) - 90*sign(rotation_degrees.y),0]
 			#if (sign(rotation_degrees.y)*old_rotation.y + 55 > sign(rotation_degrees.y)*90):

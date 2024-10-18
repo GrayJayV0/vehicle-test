@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://bduswfya4e5lx"]
+[gd_scene load_steps=20 format=3 uid="uid://bduswfya4e5lx"]
 
 [ext_resource type="Script" path="res://car.gd" id="1_xkwxr"]
 
@@ -47,6 +47,8 @@ albedo_color = Color(0, 0, 0, 1)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4kotb"]
 albedo_color = Color(0, 0, 0, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_0sysg"]
 
 [node name="VehicleBody3D" type="VehicleBody3D"]
 rotation_order = 0
@@ -139,3 +141,9 @@ transform = Transform3D(-1, -1.21669e-08, 8.6572e-08, 0, 0.990268, 0.139173, -8.
 
 [node name="CenterOfMass" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.5)
+
+[node name="drift" type="Node3D" parent="."]
+transform = Transform3D(0.258819, 0, 1.93185, 0, 1, 0, -0.965926, 0, 0.517638, 0, 0, 0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="drift"]
+mesh = SubResource("BoxMesh_0sysg")
