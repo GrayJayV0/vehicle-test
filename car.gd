@@ -4,6 +4,7 @@ extends VehicleBody3D
 @onready var flwheel = $VehicleWheel3D2
 @onready var frwheel = $VehicleWheel3D3
 @onready var camera = $Camera3D
+@onready var capsule = $MeshInstance3D
 @export var MAX_STEER = 1
 @export var ENGINE_POWER = 2000
 
@@ -23,6 +24,9 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	#print(rotation_degrees,rotation)
 	#print(linear_velocity)
+	
+	capsule.position = basis.z;
+	
 	if Input.is_action_pressed("drift") and Input.get_axis("ui_right","ui_left") != 0 and !drift:
 		#Takes the all the cars positional and rotaitional data at the time of the drift
 		drift = true
