@@ -6,7 +6,7 @@ extends VehicleBody3D
 @onready var camera = $Camera3D
 @onready var capsule = $MeshInstance3D
 @export var MAX_STEER = 1
-@export var ENGINE_POWER = 2000
+@export var ENGINE_POWER = 4000
 
 @export var DRIFT = 1
 var drift
@@ -24,21 +24,16 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	#print(rotation_degrees,rotation)
 	#print(linear_velocity)
-	
-	capsule.position = basis.z;
+
 	
 	if Input.is_action_pressed("drift") and Input.get_axis("ui_right","ui_left") != 0 and !drift:
 		#Takes the all the cars positional and rotaitional data at the time of the drift
 		drift = true
 		axis = Input.get_axis("ui_right","ui_left")
 		steering = Input.get_axis("ui_right","ui_left")
-		old_rotation = rotation_degrees
+		old_rotation = global_rotation_degrees
 		old_position = position
 		old_velocity = linear_velocity
-		new_rotation = (((old_rotation.y + 75*sign(old_rotation.y)) - 90*sign(old_rotation.y))*sign(old_rotation.y+ 75*axis)*sign(old_rotation.y))
-		#print(axis)
-		#print("drift start: " + str(old_rotation.y))
-		#print("drift end: " + str(int(sign(old_rotation.y + 75*sign(rotation_degrees.y) - 90*sign(rotation_degrees.y)) == sign(old_rotation.y))*90))
 	if Input.is_action_just_released("drift"):
 		#print(rotation_degrees.y)
 		blwheel.wheel_friction_slip = 10.5
@@ -48,136 +43,18 @@ func _physics_process(delta: float) -> void:
 		drift = false
 		angular_velocity.y = 0
 
-	if !drift:
-		engine_force = Input.get_axis("ui_down","ui_up") * ENGINE_POWER
-		steering = move_toward(steering, Input.get_axis("ui_right","ui_left") * MAX_STEER, delta * 10)
-	else:
-		linear_velocity.z = old_velocity.z
-		linear_velocity.x = old_velocity.x
-		apply_torque_impulse(Vector3(0,10*Input.get_axis("ui_right","ui_left"),0))
-		
+	engine_force = Input.get_axis("ui_down","ui_up") * ENGINE_POWER
+	steering = move_toward(steering, Input.get_axis("ui_right","ui_left") * MAX_STEER, delta * 10)
 		
 		
 func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
-	var over
-	var under
 	if drift:
-		if Input.get_axis("ui_right","ui_left") == -1:
-			under = [old_rotation.y,old_rotation.y + axis*75]
-			if (abs(sign(rotation_degrees.y)*old_rotation.y + 75) > abs(sign(rotation_degrees.y)*90) or abs(sign(rotation_degrees.y)*old_rotation.y + 75) < 0):
-				over = [new_rotation,sign(rotation_degrees.y)*int(sign(old_rotation.y)==sign(old_rotation.y + sign(rotation_degrees.y)*75))*90]
-				under = [old_rotation.y,sign(rotation_degrees.y)*int(sign(old_rotation.y)==sign(old_rotation.y + sign(rotation_degrees.y)*75))*90]
-
-				#clamp(rotation_degrees.y,[under.max(),over.max()].min(),[under.max(),over.max()].max())
-				#print( round(rotation_degrees.y))
-				#print(zero)
-				if zero:
-					rotation_degrees.y = clamp(rotation_degrees.y,over.min(),over.max())
-				else:
-					rotation_degrees.y = clamp(rotation_degrees.y,under.min(),under.max())
-					if round(rotation_degrees.y) == int(under.max()) or round(rotation_degrees.y) in range(int(under.max())+1,int(under.max())+1):
-						zero = true
-					
-			else:
-				rotation_degrees.y = clamp(rotation_degrees.y,under.min(),under.max())
-			print(((old_rotation.y + 75*-sign(old_rotation.y)) - 90*sign(old_rotation.y))*sign(old_rotation.y+ 75*axis)*sign(old_rotation.y))
-			print(old_rotation.y + 75*-sign(old_rotation.y))
-			print((rotation_degrees.y >= -90 and rotation_degrees.y <= -75 or rotation_degrees.y <= 90 and rotation_degrees.y >= 75) and sign(old_rotation.y + 75*-sign(old_rotation.y)) == axis)
-			print(under)
-			print(over)
-			#print(sign(rotation_degrees.y)*int(sign(old_rotation.y)==sign(old_rotation.y + sign(rotation_degrees.y)*75))*90)
-	if !drift:
-		zero = false
-			#print(old_rotation.y not in range(-90,-75) or old_rotation.y not in range(75,90))
-		#elif Input.get_axis("ui_right","ui_left") == 0:
-			#total = [old_rotation.y + 75*sign(rotation_degrees.y) - 90*sign(rotation_degrees.y),0]
-			#if (sign(rotation_degrees.y)*old_rotation.y + 55 > sign(rotation_degrees.y)*90):
-				#if clamp(rotation_degrees.y,[old_rotation.y+(55*sign(rotation_degrees.y)),0].min(),[old_rotation.y+(55*sign(rotation_degrees.y)),0].max()):
-					#rotation_degrees.y = clamp(rotation_degrees.y,[old_rotation.y+(55*sign(rotation_degrees.y)),0].min(),[old_rotation.y+(55*sign(rotation_degrees.y)),0].max())
-				#elif clamp(rotation_degrees.y,old_rotation.y,90):
-					#rotation_degrees.y = clamp(rotation_degrees.y,old_rotation.y,90)
-			#else: 
-				#clamp_rotation = clamp(rotation_degrees.y,old_rotation.y,old_rotation.y + 55)
-				#rotation_degrees.y = clamp_rotation
-		#elif Input.get_axis("ui_right","ui_left") == 1:
-			#total = [old_rotation.y + 75*sign(rotation_degrees.y) - 90*sign(rotation_degrees.y),0]
-			#if (sign(rotation_degrees.y)*old_rotation.y + 35 > sign(rotation_degrees.y)*90):
-				#if clamp(rotation_degrees.y,[old_rotation.y+(35*sign(rotation_degrees.y)),0].min(),[old_rotation.y+(35*sign(rotation_degrees.y)),0].max()):
-					#rotation_degrees.y = clamp(rotation_degrees.y,[old_rotation.y+(35*sign(rotation_degrees.y)),0].min(),[old_rotation.y+(35*sign(rotation_degrees.y)),0].max())
-				#elif clamp(rotation_degrees.y,old_rotation.y,90):
-					#rotation_degrees.y = clamp(rotation_degrees.y,old_rotation.y,90)
-			#else: 
-				#clamp_rotation = clamp(rotation_degrees.y,old_rotation.y,old_rotation.y + 35)
-				#rotation_degrees.y = clamp_rotation
-	
-	
-	
-	
-	
-	#if drift and axis == 1:
-		##Control the left drift 
-		#if Input.get_axis("ui_right","ui_left") == 1:
-			##Control the wide left drift 
-			#if (sign(rotation_degrees.y)*old_rotation.y + 75 > sign(rotation_degrees.y)*90):
-				#if clamp(rotation_degrees.y,[old_rotation.y+(90*sign(rotation_degrees.y)),0].min(),[old_rotation.y+(90*sign(rotation_degrees.y)),0].max()):
-					#clamp_rotation = clamp(rotation_degrees.y,[old_rotation.y+(90*sign(rotation_degrees.y)),0].min(),[old_rotation.y+(90*sign(rotation_degrees.y)),0].max())
-				#elif clamp(rotation_degrees.y,old_rotation.y,90):
-					#clamp_rotation = clamp(rotation_degrees.y,old_rotation.y,90)
-					#rotation_degrees.y = clamp_rotation
-			#else: 
-				#clamp_rotation = clamp(rotation_degrees.y,old_rotation.y,old_rotation.y + 75)
-				#rotation_degrees.y = clamp_rotation
-			#
-			##Control the neutral left drift 
-		#elif Input.get_axis("ui_right","ui_left") == 0:
-			#if (sign(rotation_degrees.y)*old_rotation.y + 55 > sign(rotation_degrees.y)*90):
-				#if clamp(rotation_degrees.y,[old_rotation.y+(90*sign(rotation_degrees.y)),0].min(),[old_rotation.y+(90*sign(rotation_degrees.y)),0].max()):
-					#rotation_degrees.y = clamp(rotation_degrees.y,[old_rotation.y+(90*sign(rotation_degrees.y)),0].min(),[old_rotation.y+(90*sign(rotation_degrees.y)),0].max())
-				#elif clamp(rotation_degrees.y,old_rotation.y,90):
-					#rotation_degrees.y = clamp(rotation_degrees.y,old_rotation.y,90)
-			#else: 
-				#clamp_rotation = clamp(rotation_degrees.y,old_rotation.y,old_rotation.y + 35)
-				#rotation_degrees.y = clamp_rotation
-				#
-			##Control the tight left drift 
-		#elif Input.get_axis("ui_right","ui_left") == -1:
-			#if (sign(rotation_degrees.y)*old_rotation.y + 35 > sign(rotation_degrees.y)*90):
-				#if clamp(rotation_degrees.y,[old_rotation.y+(90*sign(rotation_degrees.y)),0].min(),[old_rotation.y+(90*sign(rotation_degrees.y)),0].max()):
-					#rotation_degrees.y = clamp(rotation_degrees.y,[old_rotation.y+(90*sign(rotation_degrees.y)),0].min(),[old_rotation.y+(90*sign(rotation_degrees.y)),0].max())
-				#elif clamp(rotation_degrees.y,old_rotation.y,90):
-					#rotation_degrees.y = clamp(rotation_degrees.y,old_rotation.y,90)
-			#else: 
-				#clamp_rotation = clamp(rotation_degrees.y,old_rotation.y,old_rotation.y + 35)
-				#rotation_degrees.y = clamp_rotation
-		#else:
-			#pass
-	#elif drift and axis == -1:
-		#if Input.get_axis("ui_right","ui_left") == -1:
-			#if (sign(rotation_degrees.y)*old_rotation.y + 75 > sign(rotation_degrees.y)*90):
-				#if clamp(rotation_degrees.y,[old_rotation.y+(90*sign(rotation_degrees.y)),0].min(),[old_rotation.y+(90*sign(rotation_degrees.y)),0].max()):
-					#rotation_degrees.y = clamp(rotation_degrees.y,[old_rotation.y+(90*sign(rotation_degrees.y)),0].min(),[old_rotation.y+(90*sign(rotation_degrees.y)),0].max())
-				#elif clamp(rotation_degrees.y,old_rotation.y,90):
-					#rotation_degrees.y = clamp(rotation_degrees.y,old_rotation.y,90)
-			#else: 
-				#clamp_rotation = clamp(rotation_degrees.y,old_rotation.y,old_rotation.y + 75)
-				#rotation_degrees.y = clamp_rotation
-		#elif Input.get_axis("ui_right","ui_left") == 0:
-			#if (sign(rotation_degrees.y)*old_rotation.y + 55 > sign(rotation_degrees.y)*90):
-				#if clamp(rotation_degrees.y,[old_rotation.y+(90*sign(rotation_degrees.y)),0].min(),[old_rotation.y+(90*sign(rotation_degrees.y)),0].max()):
-					#rotation_degrees.y = clamp(rotation_degrees.y,[old_rotation.y+(90*sign(rotation_degrees.y)),0].min(),[old_rotation.y+(90*sign(rotation_degrees.y)),0].max())
-				#elif clamp(rotation_degrees.y,old_rotation.y,90):
-					#rotation_degrees.y = clamp(rotation_degrees.y,old_rotation.y,90)
-			#else: 
-				#clamp_rotation = clamp(rotation_degrees.y,old_rotation.y,old_rotation.y + 55)
-				#rotation_degrees.y = clamp_rotation
-		#elif Input.get_axis("ui_right","ui_left") == 1:
-			#if (sign(rotation_degrees.y)*old_rotation.y + 35 > sign(rotation_degrees.y)*90):
-				#if clamp(rotation_degrees.y,[old_rotation.y+(90*sign(rotation_degrees.y)),0].min(),[old_rotation.y+(90*sign(rotation_degrees.y)),0].max()):
-					#rotation_degrees.y = clamp(rotation_degrees.y,[old_rotation.y+(90*sign(rotation_degrees.y)),0].min(),[old_rotation.y+(90*sign(rotation_degrees.y)),0].max())
-				#elif clamp(rotation_degrees.y,old_rotation.y,90):
-					#rotation_degrees.y = clamp(rotation_degrees.y,old_rotation.y,90)
-			#else: 
-				#clamp_rotation = clamp(rotation_degrees.y,old_rotation.y,old_rotation.y + 35)
-				#rotation_degrees.y = clamp_rotation
-	#if Input.is_action_just_pressed("drift"):
-		#camera.rotation_degrees.y += rotation_degrees.y
+		linear_velocity.z = old_velocity.z
+		apply_torque_impulse(Vector3(0,10*axis,0))
+		apply_central_impulse(Vector3(1*axis,0,0))
+		if axis == Input.get_axis("ui_right","ui_left"):
+			global_rotation_degrees.y = clamp(global_rotation_degrees.y,[old_rotation.y+75*axis,old_rotation.y].min(),[old_rotation.y+75*axis,old_rotation.y].max())
+		elif axis == 0:
+			global_rotation_degrees.y = clamp(global_rotation_degrees.y,[old_rotation.y+75*axis,old_rotation.y].min(),[old_rotation.y+65*axis,old_rotation.y].max())
+		elif axis == -Input.get_axis("ui_right","ui_left"):
+			global_rotation_degrees.y = clamp(global_rotation_degrees.y,[old_rotation.y+75*axis,old_rotation.y].min(),[old_rotation.y+55*axis,old_rotation.y].max())
