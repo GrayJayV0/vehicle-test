@@ -45,16 +45,21 @@ func _physics_process(delta: float) -> void:
 
 	engine_force = Input.get_axis("ui_down","ui_up") * ENGINE_POWER
 	steering = move_toward(steering, Input.get_axis("ui_right","ui_left") * MAX_STEER, delta * 10)
+	
 		
 		
 func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 	if drift:
+		blwheel.wheel_friction_slip = 2.5
+		brwheel.wheel_friction_slip = 2.5
+		flwheel.wheel_friction_slip = 10.5
+		frwheel.wheel_friction_slip = 10.5
 		linear_velocity.z = old_velocity.z
-		apply_torque_impulse(Vector3(0,10*axis,0))
-		apply_central_impulse(Vector3(1*axis,0,0))
 		if axis == Input.get_axis("ui_right","ui_left"):
+			apply_torque_impulse(Vector3(0,10*axis,0))
 			global_rotation_degrees.y = clamp(global_rotation_degrees.y,[old_rotation.y+75*axis,old_rotation.y].min(),[old_rotation.y+75*axis,old_rotation.y].max())
-		elif axis == 0:
-			global_rotation_degrees.y = clamp(global_rotation_degrees.y,[old_rotation.y+75*axis,old_rotation.y].min(),[old_rotation.y+65*axis,old_rotation.y].max())
+		elif Input.get_axis("ui_right","ui_left") == 0:
+			global_rotation_degrees.y = clamp(global_rotation_degrees.y,[old_rotation.y+75*axis,old_rotation.y+45*axis].min(),[old_rotation.y+75*axis,old_rotation.y+45*axis].max())
 		elif axis == -Input.get_axis("ui_right","ui_left"):
-			global_rotation_degrees.y = clamp(global_rotation_degrees.y,[old_rotation.y+75*axis,old_rotation.y].min(),[old_rotation.y+55*axis,old_rotation.y].max())
+			apply_torque_impulse(Vector3(0,5*axis,0))
+			global_rotation_degrees.y = clamp(global_rotation_degrees.y,[old_rotation.y+45*axis,old_rotation.y].min(),[old_rotation.y+45*axis,old_rotation.y].max())
