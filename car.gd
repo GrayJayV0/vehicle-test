@@ -27,7 +27,7 @@ func _physics_process(delta: float) -> void:
 
 	
 	if Input.is_action_pressed("drift") and Input.get_axis("ui_right","ui_left") != 0 and !drift:
-		#Takes the all the cars positional and rotaitional data at the time of the drift
+		#Takes the all the cars positional and rotational data at the time of the drift along with the way that the car is turning
 		drift = true
 		axis = Input.get_axis("ui_right","ui_left")
 		steering = Input.get_axis("ui_right","ui_left")
@@ -50,16 +50,23 @@ func _physics_process(delta: float) -> void:
 		
 func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 	if drift:
+		#When the car is drifting reduces the friction on the cars wheels
 		blwheel.wheel_friction_slip = 2.5
 		brwheel.wheel_friction_slip = 2.5
 		flwheel.wheel_friction_slip = 10.5
 		frwheel.wheel_friction_slip = 10.5
+		#Keeps the linear velocity at the same from the drifts start to end
 		linear_velocity.z = old_velocity.z
+		#Checks if the direction your pressing is the same as the directions from the start of the drift 
 		if axis == Input.get_axis("ui_right","ui_left"):
+			#Tight drift 
 			apply_torque_impulse(Vector3(0,10*axis,0))
+			#Locks the axis to the start position and the given angle
 			global_rotation_degrees.y = clamp(global_rotation_degrees.y,[old_rotation.y+75*axis,old_rotation.y].min(),[old_rotation.y+75*axis,old_rotation.y].max())
 		elif Input.get_axis("ui_right","ui_left") == 0:
+			#Middle drift 
 			global_rotation_degrees.y = clamp(global_rotation_degrees.y,[old_rotation.y+75*axis,old_rotation.y+45*axis].min(),[old_rotation.y+75*axis,old_rotation.y+45*axis].max())
 		elif axis == -Input.get_axis("ui_right","ui_left"):
+			#Wide drift 
 			apply_torque_impulse(Vector3(0,5*axis,0))
 			global_rotation_degrees.y = clamp(global_rotation_degrees.y,[old_rotation.y+45*axis,old_rotation.y].min(),[old_rotation.y+45*axis,old_rotation.y].max())
